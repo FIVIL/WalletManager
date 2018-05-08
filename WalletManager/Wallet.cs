@@ -5,7 +5,7 @@ using CryptoApi;
 using TransactionManager;
 namespace WalletManager
 {
-    class Wallet
+    public class Wallet
     {
         public KeyContainer KeyPair { get; private set; }
         private string PrivateKeyFilePath { get; set; }
