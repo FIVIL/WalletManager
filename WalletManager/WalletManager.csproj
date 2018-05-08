@@ -4,4 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="CryptoApi">
+      <HintPath>..\..\TransactionManager\TransactionManager\bin\Release\netstandard2.0\CryptoApi.dll</HintPath>
+    </Reference>
+    <Reference Include="TransactionManager">
+      <HintPath>..\..\TransactionManager\TransactionManager\bin\Release\netstandard2.0\TransactionManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
