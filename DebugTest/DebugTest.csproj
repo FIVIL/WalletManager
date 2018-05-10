@@ -1,12 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WalletManager\WalletManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="CryptoApi">
-      <HintPath>..\..\CryptoApi\CryptoApi\bin\Release\netstandard2.0\CryptoApi.dll</HintPath>
+      <HintPath>..\WalletManager\bin\Release\netstandard2.0\CryptoApi.dll</HintPath>
     </Reference>
     <Reference Include="TransactionManager">
       <HintPath>..\..\TransactionManager\TransactionManager\bin\Release\netstandard2.0\TransactionManager.dll</HintPath>

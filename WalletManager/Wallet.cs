@@ -88,7 +88,7 @@ namespace WalletManager
         /// <param name="transactionName">transaction name(optional)</param>
         /// <returns>newly generated transaction for process and publish into network.</returns>
         public Transaction IsuueNewTransaction(Func<Dictionary<string, TransactionOutput>, string, bool> validator,
-            Func<List<TransactionInput>, bool> CleanUp,
+            Func<List<TransactionOutput>, bool> CleanUp,
             string recipientPublicKey, double amount, uint seq, string transactionName)
         {
             if (Balance < amount) throw new Exception("not enough credit!!");
@@ -106,11 +106,13 @@ namespace WalletManager
             var newTransaction = new Transaction(transactionName, Utilities.TransactionVesion, PublicKey, recipientPublicKey,
                 amount, seq, inputs);
             newTransaction.GenerateSignture(PrivateKeyFilePath);
+            List<TransactionOutput> ProcessingUtxos = new List<TransactionOutput>();
             foreach (var item in inputs)
             {
+                ProcessingUtxos.Add(MyUTXOs[item.TransactionOutputHash]);
                 MyUTXOs.Remove(item.TransactionOutputHash);
             }
-            if (!CleanUp(inputs)) throw new Exception("sth might be wrong with network connection!",
+            if (!CleanUp(ProcessingUtxos)) throw new Exception("sth might be wrong with network connection!",
                  new Exception("couldnt update network!"));
             return newTransaction;
         }
