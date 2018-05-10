@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="CryptoApi">
-      <HintPath>..\WalletManager\bin\Release\netstandard2.0\CryptoApi.dll</HintPath>
+      <HintPath>..\..\TransactionManager\TransactionManager\bin\Release\netstandard2.0\CryptoApi.dll</HintPath>
     </Reference>
     <Reference Include="TransactionManager">
       <HintPath>..\..\TransactionManager\TransactionManager\bin\Release\netstandard2.0\TransactionManager.dll</HintPath>

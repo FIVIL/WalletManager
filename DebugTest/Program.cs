@@ -9,6 +9,7 @@ namespace DebugTest
     {
         private static Dictionary<string, TransactionOutput> utxos = new Dictionary<string, TransactionOutput>();
         private static Dictionary<string, TransactionOutput> utxosp { get; set; } = new Dictionary<string, TransactionOutput>();
+        private static Dictionary<string, TransactionOutput> utxosm { get; set; } = new Dictionary<string, TransactionOutput>();
         static void Main(string[] args)
         {
             AesFileEncryptionPrivider.Create("Xunit");
@@ -27,7 +28,7 @@ namespace DebugTest
             T.GenerateSignture("key0.dat");
             T.TransactionOutputs.Add(new TransactionOutput(T.Reciepient, T.Amount, T.TransactionHash));
             utxos.Add(T.TransactionOutputs[0].HashString, T.TransactionOutputs[0]);
-            T.Process(x => true, null, null, Cleaner);
+            Console.WriteLine(T.Process(x => true, null, null, Cleaner));
             W1.Refresh(refresh);
             Console.WriteLine(W1.Balance);
             var T2 = W1.IsuueNewTransaction(Validator, Clean, W2.PublicKey, 15, 2, "h");
@@ -35,25 +36,54 @@ namespace DebugTest
             W2.Refresh(refresh);
             Console.WriteLine(W1.Balance);
             Console.WriteLine(W2.Balance);
-            T2.Process(x => false, null, CFA, Cleaner);
+            var TF1 = new Transaction(3, W3.PublicKey, 10);
+            TF1.GenerateSignture("key3.dat");
+            TF1.TransactionOutputs.Add(new TransactionOutput(TF1.Reciepient, TF1.Amount, TF1.TransactionHash));
+            utxos.Add(TF1.TransactionOutputs[0].HashString, TF1.TransactionOutputs[0]);
+            Console.WriteLine(T2.Process(x => false, null, CFA, Cleaner));
+            Console.WriteLine(TF1.Process(x => false, checkforminerreward, CFA, Cleaner));
             W1.Refresh(refresh);
             W2.Refresh(refresh);
+            W3.Refresh(refresh);
             Console.WriteLine(W1.Balance);
             Console.WriteLine(W2.Balance);
+            Console.WriteLine(W3.Balance);
             //
-            W1.KeyPair.ExportPrivateKey("key1.dat");
+            //W1.KeyPair.ExportPrivateKey("key1.dat");
             var T3 = W1.IsuueNewTransaction(Validator, Clean, W2.PublicKey, 15, 3, "h2");
             W1.Refresh(refresh);
             W2.Refresh(refresh);
             Console.WriteLine(W1.Balance);
             Console.WriteLine(W2.Balance);
-            T3.Process(x => false, null, CFA, Cleaner);
+            var TF2 = new Transaction(3, W3.PublicKey, 10);
+            TF2.TransactionOutputs.Add(new TransactionOutput(TF2.Reciepient, TF2.Amount, TF2.TransactionHash));
+            utxos.Add(TF2.TransactionOutputs[0].HashString, TF2.TransactionOutputs[0]);
+            Console.WriteLine(T3.Process(x => false, null, CFA, Cleaner));
+            //W3.KeyPair.ExportPrivateKey("key3.dat");
+            TF2.GenerateSignture("key3.dat");
+            Console.WriteLine(TF2.Process(x => false, checkforminerreward, CFA, Cleaner));
             W1.Refresh(refresh);
             W2.Refresh(refresh);
+            W3.Refresh(refresh);
             Console.WriteLine(W1.Balance);
             Console.WriteLine(W2.Balance);
-
+            Console.WriteLine(W3.Balance);
             Console.ReadKey();
+        }
+
+        private static bool checkforminerreward(Transaction t)
+        {
+            //in reall app remember to make utxo work
+            var res = true;
+            foreach (var item in t.TransactionOutputs)
+            {
+                if (!utxosm.ContainsKey(item.HashString))
+                {
+                    res = false;
+                    break;
+                }
+            }
+            return res;
         }
         private static bool Validator(Dictionary<string, TransactionOutput> ut, string publickey)
         {
@@ -78,14 +108,14 @@ namespace DebugTest
             var res = true;
             foreach (var item in p)
             {
-                if (!utxos.ContainsKey(item.TransactionOutputHash))
+                if (!utxosp.ContainsKey(item.TransactionOutputHash))
                 {
                     res = false;
                     break;
                 }
                 else
                 {
-                    item.UTXO = utxos[item.TransactionOutputHash];
+                    item.UTXO = utxosp[item.TransactionOutputHash];
                 }
             }
             return res;
@@ -94,8 +124,10 @@ namespace DebugTest
         {
             foreach (var item in outp)
             {
-
-                utxos.Remove(item.HashString);
+                if (utxos.ContainsKey(item.HashString))
+                    utxos.Remove(item.HashString);
+                else if (utxosm.ContainsKey(item.HashString))
+                    utxosp.Remove(item.HashString);
                 utxosp.Add(item.HashString, item);
 
             }
